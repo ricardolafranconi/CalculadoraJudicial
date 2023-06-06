@@ -26,7 +26,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import useTypewriter from "react-typewriter-hook";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/NavBar";
 import Calculator from "../components/Calculator";
 import { CalculatorResultsContext } from "../contextApi/CalculatorResultsContext";
 
