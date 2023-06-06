@@ -22,20 +22,7 @@
  
 }
 
-.calculatorPage {
-  /* background-image: url("../public/background.jpg"); */
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  flex-direction: column;
-  padding: 1rem;
-  box-sizing: border-box;
-  /* background-image: url(); */
-  
-  background-repeat: no-repeat;
-  height: 100vh;
-  background-size: cover;
-}
+
 
 .resultsPage{
   display: flex;
