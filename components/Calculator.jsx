@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -9,17 +9,18 @@ import {
   Text,
   VStack,
   HStack,
-  ButtonGroup
+  ButtonGroup,
+  Checkbox
 } from "@chakra-ui/react";
-import { useDispatch } from 'react-redux';
-import { setResults } from '../actions/calculatorActions';
+
+import { CalculatorResultsContext, useCalculatorResults } from '../contextApi/CalculatorResultsContext'
+import {jsPDF} from 'jspdf'
 
 const optionsB2 = ["ORDINARIO", "ABREVIADO", "EJECUTIVO"];
 const optionsB3 = ["ACTOR", "DEMANDADO"];
 const optionsB4 = ["ADMISIÓN TOTAL", "ADMISIÓN PARCIAL", "RECHAZO TOTAL"];
 
 
-const jus = 5968
 
 
 
@@ -66,7 +67,7 @@ function baseRegulatoria(B2, B3, B4, B5) {
       return 0;
     }
     
-    function honorariosMini (B2) {
+    function honorariosMini (B2, jus) {
       const ORDINARIO = jus * 20;
       const ABREVIADO = jus * 15;
       const EJECUTIVO = jus * 10;
@@ -102,7 +103,35 @@ function baseRegulatoria(B2, B3, B4, B5) {
   
 
  function Calculator() {
-  const dispatch = useDispatch();
+
+  
+
+  const [stages, setStages] = useState({
+    DemandaYContestacion: false,
+    OfrecimientoDePrueba: false,
+    DiligenciamientoDePrueba: false,
+    Alegatos: false,
+  });
+
+  const [totalStagesPercentage, setTotalStagesPercentage] = useState(0);
+  
+  useEffect(() => {
+    let newPercentage = 0;
+    if (stages.DemandaYContestacion) newPercentage += 40;
+    if (stages.OfrecimientoDePrueba) newPercentage += 20;
+    if (stages.DiligenciamientoDePrueba) newPercentage += 20;
+    if (stages.Alegatos) newPercentage += 20;
+    setTotalStagesPercentage(newPercentage / 100);
+  }, [stages]);
+  
+  const handleStageChange = (stage) => {
+    setStages(prevStages => ({
+      ...prevStages,
+      [stage]: !prevStages[stage]
+    }));
+  }
+
+  const {setResults} = useCalculatorResults();
   const [B2, setB2] = useState("ORDINARIO");
   const [B3, setB3] = useState("ACTOR");
   const [B4, setB4] = useState("ADMISIÓN TOTAL");
@@ -116,6 +145,7 @@ const[unidadesEconomicas, setUnidadesEconomicas] = useState()
 const[tramitacionTotal, setTramitacionTotal] = useState()
 const[honorariosMinimos, setHonorariosMinimos] = useState()
 const[honorariosTramitacionTotal, setHonorariosTramitacionTotal] = useState()
+const [jus, setJus] = useState(5968)
 
 
 const valorUnidadEconomica = 1573000
@@ -129,7 +159,7 @@ const aperturaDeCarpeta = jus * 3
   const handleSubmit = (e) => {
     e.preventDefault();
   
-    const honorariosMin = honorariosMini(B2);
+    const honorariosMin = honorariosMini(B2, jus);
     setHonorariosMinimos(honorariosMin);
     
   const newBase = baseRegulatoria(B2, B3, B4, B5);
@@ -150,24 +180,32 @@ const aperturaDeCarpeta = jus * 3
   const newFinalResult = honorariosMin > newTramitacionTotal ? honorariosMin : newTramitacionTotal;
   setHonorariosTramitacionTotal(newFinalResult);
   console.log(newFinalResult)
- 
 
-
-  };
+  ;
 
   const finalResult = {
-    base: formatCurrency(base),
-    unidadesEconomicas,
-    minimoEscala: (minimoEscala * 100).toFixed(2),
+    base: formatCurrency(newBase),
+    unidadesEconomicas: newUnidadesEconomicas,
+    minimoEscala: (newMinimoEscala * 100).toFixed(2),
     maximoEscala: maximoEscala * 100,
-    puntoMedio: (puntoMedio * 100).toFixed(2),
+    puntoMedio: (newPuntoMedio * 100).toFixed(2),
     aperturaDeCarpeta: formatCurrency(aperturaDeCarpeta),
-    tramitacionTotal: formatCurrency(tramitacionTotal),
-    honorariosMinimos: formatCurrency(honorariosMinimos),
-    honorariosTramitacionTotal: formatCurrency(honorariosTramitacionTotal),
+    tramitacionTotal: formatCurrency(newTramitacionTotal),
+    honorariosMinimos: formatCurrency(honorariosMin),
+    honorariosTramitacionTotal: formatCurrency(newFinalResult),
   };
+  
+  setResults(finalResult)
+  console.log(finalResult);
 
-  dispatch(setResults(finalResult));
+  setHonorariosMinimos(honorariosMin);
+  setBase(newBase);
+  setUnidadesEconomicas(newUnidadesEconomicas);
+  setMinimoEscala(newMinimoEscala);
+  setPuntoMedio(newPuntoMedio);
+  setTramitacionTotal(newTramitacionTotal);
+  setHonorariosTramitacionTotal(newFinalResult);
+}
 
   const handleReset = () => {
     setB2("ORDINARIO");
@@ -181,9 +219,33 @@ const aperturaDeCarpeta = jus * 3
     setUnidadesEconomicas(0);
     setTramitacionTotal(0);
     setHonorariosTramitacionTotal(0);
-  };
-
-
+    setJus(5968)
+    setStages({
+    DemandaYContestacion: false,
+    OfrecimientoDePrueba: false,
+    DiligenciamientoDePrueba: false,
+    Alegatos: false,
+    })
+  
+    
+  }
+    const downloadPdf = () => {
+      const doc = new jsPDF();
+      doc.setFontSize(22);
+      doc.text('Resultados', 10, 10);
+      doc.setFontSize(16);
+        
+      doc.text(`Base: ${formatCurrency(base)}`, 10, 20);
+      doc.text(`Unidades económicas: ${unidadesEconomicas}`, 10, 30);
+      doc.text(`Minimo Escala: ${minimoEscala}`, 10, 40);
+      doc.text(`Máximo Escala: ${maximoEscala}`, 10, 50);
+      doc.text(`Apertura de Carpeta: ${formatCurrency(aperturaDeCarpeta)}`, 10, 60);
+      doc.text(`Punto Medio: ${puntoMedio}`, 10, 70);
+      doc.text(`Honorarios Tramitación Total: ${formatCurrency(honorariosTramitacionTotal)}`, 10, 80);
+      
+      // Add other results here
+      doc.save('resultados.pdf');
+    };
 
   // const minimoEscala = calculateMinimoEscala(unidadesEconomicas);
   // setMinimoEscala(minimoEscala);
@@ -193,7 +255,17 @@ const aperturaDeCarpeta = jus * 3
  
   return (
     <form onSubmit={handleSubmit}>
-      <VStack spacing={2}>
+      <VStack spacing={2} paddingTop='10%'>
+      <HStack spacing='20%'>
+        <VStack>
+        <FormControl>
+            <FormLabel>Valor Jus(modificar de ser necesario)</FormLabel>
+            <Input
+              type="number"
+              value={jus}
+              onChange={(e) => setJus(e.target.value)}
+            />
+          </FormControl>
         <FormControl>
           <FormLabel>TIPO DE JUICIO</FormLabel>
           <Select
@@ -241,14 +313,37 @@ const aperturaDeCarpeta = jus * 3
             onChange={(e) => setB5(e.target.value)}
           />
         </FormControl>
+        <FormControl>
+  <FormLabel>Otro porcentaje</FormLabel>
+  {/* <Input
+    type="number"
+    value={puntoMedio*100}
+    onChange={(e) => setPuntoMedio(e.target.value/100)}   
+  
+  /> */}
+</FormControl>
+        
         <ButtonGroup>
         <Button type="submit" colorScheme="blue">
           Calcular
         </Button>
         <Button colorScheme="red" onClick={handleReset}>
-          Reset
+          Resetear
         </Button>
+        <Button colorScheme="green" onClick={downloadPdf}>
+  Descargar PDF
+</Button>
+
       </ButtonGroup>
+
+
+      
+
+      </VStack>
+
+      
+
+   
   
 
         <VStack spacing={4} alignItems="start"  width='100%'>
@@ -326,7 +421,28 @@ const aperturaDeCarpeta = jus * 3
 </Text>
     </Box>
   </VStack>
+<VStack>
+  <VStack>
+  <Checkbox isChecked={stages.DemandaYContestacion} onChange={() => handleStageChange('DemandaYContestacion')}>Demanda y contestación - 40%</Checkbox>
+  <Checkbox isChecked={stages.OfrecimientoDePrueba} onChange={() => handleStageChange('OfrecimientoDePrueba')}>Ofrecimiento de prueba - 20%</Checkbox>
+  <Checkbox isChecked={stages.DiligenciamientoDePrueba}onChange={() => handleStageChange('DiligenciamientoDePrueba')}>Diligenciamiento de prueba - 20%</Checkbox>
+  <Checkbox isChecked={stages.Alegatos}onChange={() => handleStageChange('Alegatos')}>Alegatos - 20%</Checkbox>
+</VStack>
 
+<Text>
+  <Text as="span" fontWeight="bold" fontSize="xl">
+    Porcentaje de etapas seleccionadas:
+  </Text>{" "}
+  {(totalStagesPercentage * 100).toFixed(2)} %
+</Text>
+
+<Text>
+  <Text as="span" fontWeight="bold" fontSize="xl">
+    Monto por etapas seleccionadas:
+  </Text>{" "}
+  {formatCurrency(honorariosTramitacionTotal * totalStagesPercentage)}
+</Text>
+</VStack>
   {/* <VStack spacing={4} alignItems="start" width='50%'>
     <Box
       bg="blue.100"
@@ -342,6 +458,7 @@ const aperturaDeCarpeta = jus * 3
 
 
 
+      </HStack>
       </VStack>
     </form>
   );

@@ -3,8 +3,8 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import Head from 'next/head'
 import { extendTheme } from '@chakra-ui/react';
-import { Provider } from 'react-redux';
-import store from '../components/store';
+import Calculator from '../components/Calculator';
+import { CalculatorResultsProvider } from '../contextApi/CalculatorResultsContext';
 
 const Fonts = () => (
     <Head>
@@ -27,9 +27,11 @@ function MyApp({ Component, pageProps }) {
   return (
     <ChakraProvider>
         <Fonts />
-        <Provider store={store}>
-      <Component {...pageProps} />\
-      </Provider>
+        <CalculatorResultsProvider>
+        <Component {...pageProps} />
+       
+      
+      </CalculatorResultsProvider>
     </ChakraProvider>
   )
 }
