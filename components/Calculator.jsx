@@ -299,7 +299,7 @@ function Calculator() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <VStack  paddingTop="15%" paddingBottom="10%">
+      <VStack  paddingTop={['15%', '15%', '15%', '8%']} paddingBottom="10%">
       <Stack alignItems='center'direction={['column', 'column','column', 'row']} width='80%' spacing='10%' justifyContent='space-around'>
           <VStack fontSize=''>
             <FormControl>

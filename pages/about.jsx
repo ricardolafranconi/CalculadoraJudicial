@@ -1,36 +1,42 @@
 import React from "react";
-import { Box, Text, Heading, Flex, Button, FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
+import { Box, Text, Image, Flex, Heading } from "@chakra-ui/react";
+import { useSpring, animated, config } from 'react-spring';
+import NavBar from '../components/NavBar';
 
-export default function Contact() {
-    return (
-        <Flex
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="100vh"
-            bg="gray.800"
-            color="white"
-        >
-            <Box 
-                p={5}
-                w={{base: "90%", md: "60%", lg: "40%"}}
-                bg="gray.700"
-                borderRadius="md"
-            >
-                <Heading mb={5}>Contact</Heading>
-                <Text mb={5}>Send us a message!</Text>
-                <form>
-                    <FormControl id="email" isRequired mb={5}>
-                        <FormLabel>Email address</FormLabel>
-                        <Input type="email" />
-                    </FormControl>
-                    <FormControl id="message" isRequired mb={5}>
-                        <FormLabel>Your message</FormLabel>
-                        <Textarea />
-                    </FormControl>
-                    <Button colorScheme="teal" type="submit">Submit</Button>
-                </form>
-            </Box>
-        </Flex>
-    );
-}
+const foto = './juarezlafranconi.jpg'
+const About = () => {
+  const textFade = useSpring({
+    from: { opacity: 0, marginTop: -500 },
+    to: { opacity: 1, marginTop: 0 },
+   config: { tension: 100, friction: 40 }
+  });
+
+  const imageFade = useSpring({
+    from: { opacity: 0, marginLeft: -1000 },
+    to: { opacity: 1, marginLeft: 0 },
+    config: { tension: 100, friction: 40 }
+  });
+
+  return (
+    <Flex direction="column" alignItems="center" justifyContent="center" h="100vh">
+      <NavBar />
+      <Flex direction={{base: "column", md: "row"}} w="80%" alignItems="center" justifyContent="center">
+        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" margin="5">
+          <animated.div style={imageFade}>
+            <Image boxSize="300px" src={foto} alt="Profile picture" mb="3" />
+          </animated.div>
+        </Box>
+        <Box maxW="sm"  borderRadius="lg" overflow="hidden" margin="5">
+          <animated.div style={textFade}>
+            <Heading mb={4}>Hugo Lafranconi, abogado</Heading>
+            <Text>
+              Hugo Lafranconi es un abogado de la ciudad de Cordoba Capital con amplia trayectoria
+            </Text>
+          </animated.div>
+        </Box>
+      </Flex>
+    </Flex>
+  );
+};
+
+export default About;

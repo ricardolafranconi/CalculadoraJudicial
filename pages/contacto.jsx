@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Icon, Box, Text, Heading, Flex, Button, FormControl, FormLabel, Input, Textarea, Link } from "@chakra-ui/react";
 import {BiLogoWhatsapp} from 'react-icons'
+import Navbar from "../components/NavBar";
 
 
 export default function Contact() {
@@ -19,6 +20,7 @@ export default function Contact() {
             bg="white.800"
             color="black"
         >
+            <Navbar/>
             <Box 
                 p={5}
                 w={{base: "90%", md: "60%", lg: "40%"}}

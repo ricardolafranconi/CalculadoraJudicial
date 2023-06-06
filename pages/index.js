@@ -63,11 +63,11 @@ function Home() {
         >
           <Box></Box>
             <Box align='center'>
-          <Heading as="h1" size={["xl", "2xl", "3xl", "4xl"]} mb={6} fontWeight="bold">
+          <Heading as="h1" size={["xl", "2xl", "3xl", "3xl", '4xl']} mb={6} fontWeight="bold">
               Calculadora Lafranconi
             </Heading>
             <Box display="flex" flexDirection="column" alignItems="center">
-              <Text fontSize={["l", "xl", "2xl", "3xl"]} mb={6}>
+              <Text fontSize={["l", "xl", "2xl", "2xl"]} mb={6}>
                 Calculá los honorarios judiciales de la Provincia de Córdoba
               </Text>
               <Text fontSize="xl" mb={6} minHeight="1.2em">
@@ -84,7 +84,7 @@ function Home() {
           <Image
               src={backgroundImage}
               alt="background"
-              height="750px"
+              height={["none", "none", "none", "650px", '800px']}
   width="400px"
               objectFit="cover"
               objectPosition="center"
@@ -92,7 +92,7 @@ function Home() {
               border="4px solid"
               borderColor="teal.500"
               boxShadow="2xl"
-              display={["none", "none", "none", "block"]}
+              display={["none", "none", "none", "cover"]}
             />
           </Box>
           
