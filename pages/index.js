@@ -24,10 +24,14 @@ import {
   FormLabel,
   FormErrorMessage,
   Image,
+  Select,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
 import useTypewriter from "react-typewriter-hook";
 import Navbar from "../components/NavBar";
 import Calculator from "../components/Calculator";
+import CalculadoraSucesorio from "../components/CalculadoraSucesorio";
 import { CalculatorResultsContext } from "../contextApi/CalculatorResultsContext";
 
 function Home() {
@@ -42,6 +46,8 @@ function Home() {
  
 
   const backgroundImage = "/background.jpg";
+
+  const [selectedCalculator, setSelectedCalculator] = useState('calculator1')
 
   const TypingEffect = ({ text }) => {
     const typewriterText = useTypewriter(text);
@@ -103,12 +109,44 @@ function Home() {
         </Box>
       </Element>
 
-      <Element name="calculator" className={s.calculatorPage}>
-        <Calculator />
-      </Element>
+ 
+<Flex
+alignItems="center"
+justifyContent="center"
+>
+  <VStack>
 
+<FormControl width={{ base: "50%", sm: "200px" }} mt={8}  justifyContent='center'>
+  <FormLabel justifyContent='center'>Tipo de Juicio</FormLabel>
+  <Select
+    value={selectedCalculator}
+    onChange={(e) => setSelectedCalculator(e.target.value)}
+  >
     
+    <option value="calculator1">Cobro de Pesos</option>
+    <option value="calculator2">Sucesorio</option>
+  </Select>
+</FormControl>
+
+
+<HStack>
+
+{selectedCalculator === "calculator1" && (
+  <Element name="calculator" className={s.calculatorPage}>
+    <Calculator />
+  </Element>
+)}
+
+{selectedCalculator === "calculator2" && (
+  <Element name="calculator" className={s.calculatorPage}>
+    <CalculadoraSucesorio />
+  </Element>
+)}
+
+</HStack>
         
+</VStack>
+        </Flex>
      
     </div>
   );
