@@ -5,6 +5,7 @@ import Head from 'next/head'
 import { extendTheme } from '@chakra-ui/react';
 import Calculator from '../components/Calculator';
 import { CalculatorResultsProvider } from '../contextApi/CalculatorResultsContext';
+import { Analytics } from '@vercel/analytics/react';
 
 const Fonts = () => (
     <Head>
@@ -29,6 +30,7 @@ function MyApp({ Component, pageProps }) {
         <Fonts />
         <CalculatorResultsProvider>
         <Component {...pageProps} />
+        <Analytics />
        
       
       </CalculatorResultsProvider>
