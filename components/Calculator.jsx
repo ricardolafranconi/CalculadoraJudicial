@@ -300,7 +300,7 @@ function Calculator() {
   return (
     <form onSubmit={handleSubmit}>
       <VStack  paddingTop={['15%', '15%', '15%', '8%']} paddingBottom="10%">
-      <Stack alignItems='center'direction={['column', 'column','column', 'row']} width='80%' spacing='10%' justifyContent='space-around'>
+      <Stack alignItems='center'direction={['column', 'column','column', 'row']} width='100%' spacing='20%' justifyContent='space-around'>
           <VStack fontSize=''>
             <FormControl>
               <FormLabel>Valor Jus(modificar de ser necesario)</FormLabel>
@@ -396,7 +396,7 @@ function Calculator() {
                 <Text as="span" fontWeight="bold" fontSize="xl">
                   Unidades económicas:
                 </Text>{" "}
-                {unidadesEconomicas}
+                {(unidadesEconomicas * 100).toFixed(2)}
               </Text>
               <Text>
                 <Text as="span" fontWeight="bold" fontSize="xl">
@@ -443,11 +443,11 @@ function Calculator() {
             </Box>
           </VStack>
           <VStack>
-            <Text width="100%" as="span" fontWeight="bold" fontSize="xl">
+            <Text align='center' width="100%" minWidth='300px'as="span" fontWeight="bold" fontSize="xl">
               Honorarios por etapas
             </Text>
 
-            <VStack width="100%" align="left">
+            <VStack width="100%" align="justify">
               <Checkbox
                 isChecked={stages.DemandaYContestacion}
                 onChange={() => handleStageChange("DemandaYContestacion")}
@@ -478,7 +478,7 @@ function Calculator() {
   </Text>{" "}
   {(totalStagesPercentage * 100).toFixed(2)} %
 </Text> */}
-              <Text as="span" fontWeight="bold" fontSize="xl">
+              <Text width='100%'as="span" fontWeight="bold" fontSize="l">
                 Monto por etapas seleccionadas:
               </Text>{" "}
               <Text align="center" fontWeight="bold" fontSize="2xl">
