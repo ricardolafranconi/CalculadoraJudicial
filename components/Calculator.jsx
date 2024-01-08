@@ -12,6 +12,9 @@ import {
   HStack,
   ButtonGroup,
   Checkbox,
+  InputGroup, 
+  InputRightAddon,
+  FormHelperText,
 } from "@chakra-ui/react";
 
 import {
@@ -176,17 +179,20 @@ function Calculator() {
   const [B3, setB3] = useState("ACTOR");
   const [B4, setB4] = useState("ADMISIÓN TOTAL");
   const [B5, setB5] = useState(0);
+  const [formattedB5, setFormattedB5] = useState('');
   const [base, setBase] = useState(0);
-  const [puntoMedio, setPuntoMedio] = useState();
+  const [puntoMedio, setPuntoMedio] = useState(0);
   const [maximoEscala, setMaximoEscala] = useState(0.25);
   const [minimoEscala, setMinimoEscala] = useState(0.2);
 
-  const [unidadesEconomicas, setUnidadesEconomicas] = useState();
-  const [tramitacionTotal, setTramitacionTotal] = useState();
-  const [honorariosMinimos, setHonorariosMinimos] = useState();
+  const [unidadesEconomicas, setUnidadesEconomicas] = useState(0);
+  const [tramitacionTotal, setTramitacionTotal] = useState(0);
+  const [honorariosMinimos, setHonorariosMinimos] = useState(0);
   const [honorariosTramitacionTotal, setHonorariosTramitacionTotal] =
-    useState();
+    useState(0);
   const [jus, setJus] = useState(5968);
+  const [customPercentage, setCustomPercentage] = useState(0);
+  const [caratulaExpediente, setCaratulaExpediente] = useState('');
 
   const valorUnidadEconomica = 1573000;
 
@@ -211,8 +217,12 @@ function Calculator() {
     const newPuntoMedio = (newMinimoEscala + maximoEscala) / 2;
     setPuntoMedio(newPuntoMedio);
 
-    const newTramitacionTotal = newPuntoMedio * newBase + aperturaDeCarpeta;
-    setTramitacionTotal(newTramitacionTotal);
+    // Use the custom percentage if it's greater than 0, otherwise use the puntoMedio
+  const percentageToUse = customPercentage > 0 ? customPercentage : newPuntoMedio;
+  const newTramitacionTotal = percentageToUse * newBase + aperturaDeCarpeta;
+  setTramitacionTotal(newTramitacionTotal);
+
+
 
     const newFinalResult =
       honorariosMin > newTramitacionTotal ? honorariosMin : newTramitacionTotal;
@@ -256,6 +266,9 @@ function Calculator() {
     setTramitacionTotal(0);
     setHonorariosTramitacionTotal(0);
     setJus(5968);
+    setCustomPercentage(''); // reset customPercentage
+    setCaratulaExpediente('');
+
     setStages({
       DemandaYContestacion: false,
       OfrecimientoDePrueba: false,
@@ -265,31 +278,55 @@ function Calculator() {
   };
   const downloadPdf = () => {
     const doc = new jsPDF();
-    doc.setFontSize(22);
-    doc.text("Resultados", 10, 10);
+
+    // Set the font size and add "Caratula expediente" at the top
+    doc.setFontSize(26);
+    doc.text("Honorarios Expediente: " + caratulaExpediente, 10, 20);
+
+    // Set the font size for the rest of the text
     doc.setFontSize(16);
 
-    doc.text(`Base: ${formatCurrency(base)}`, 10, 20);
-    doc.text(`Unidades económicas: ${unidadesEconomicas}`, 10, 30);
-    doc.text(`Minimo Escala: ${minimoEscala}`, 10, 40);
-    doc.text(`Máximo Escala: ${maximoEscala}`, 10, 50);
-    doc.text(
-      `Apertura de Carpeta: ${formatCurrency(aperturaDeCarpeta)}`,
-      10,
-      60
-    );
-    doc.text(`Punto Medio: ${puntoMedio}`, 10, 70);
-    doc.text(
-      `Honorarios Tramitación Total: ${formatCurrency(
-        honorariosTramitacionTotal
-      )}`,
-      10,
-      80
-    );
+    // Add a line break after each text to create some space between them
+    let y = 30;
+    const lineBreak = 10;
 
-    // Add other results here
-    doc.save("resultados.pdf");
+    doc.text(`Base: ${formatCurrency(base)}`, 10, y);
+    y += lineBreak;
+
+    doc.text(`Unidades económicas: ${unidadesEconomicas}`, 10, y);
+    y += lineBreak;
+
+    doc.text(`Minimo Escala: ${minimoEscala}`, 10, y);
+    y += lineBreak;
+
+    doc.text(`Máximo Escala: ${maximoEscala}`, 10, y);
+    y += lineBreak;
+
+    doc.text(`Apertura de Carpeta: ${formatCurrency(aperturaDeCarpeta)}`, 10, y);
+    y += lineBreak;
+
+    doc.text(`Punto Medio: ${puntoMedio}`, 10, y);
+    y += lineBreak;
+
+    doc.text(`Honorarios Tramitación Total: ${formatCurrency(honorariosTramitacionTotal)}`, 10, y);
+    y += lineBreak;
+
+    // Add "customPercentage" at the bottom
+    doc.setFontSize(18);
+    doc.text(`Porcentaje aplicado: ${(customPercentage !== '' ? customPercentage : puntoMedio) * 100} %`, 10, y + lineBreak);
+
+    // Save the PDF
+    doc.save(`Resultados_${caratulaExpediente}.pdf`);;
   };
+
+  useEffect(() => {
+    // This function adds commas as thousands separators
+    const formatNumber = (num) => {
+      return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    };
+
+    setFormattedB5(formatNumber(B5));
+  }, [B5]);
 
   // const minimoEscala = calculateMinimoEscala(unidadesEconomicas);
   // setMinimoEscala(minimoEscala);
@@ -299,9 +336,21 @@ function Calculator() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <VStack  paddingTop={['15%', '15%', '15%', '8%']} paddingBottom="10%">
-      <Stack alignItems='center'direction={['column', 'column','column', 'row']} width='100%' spacing='20%' justifyContent='space-around'>
-          <VStack fontSize=''>
+      <VStack  paddingTop={['15%', '10%', '5%', '2%']} paddingBottom="10%">
+      <Stack alignItems='center'
+        direction={['column', 'column', 'row', 'row']}
+        width='100%'
+        spacing={['5%', '10%', '15%', '20%']}
+        justifyContent='space-around'>
+           <VStack fontSize={['sm', 'md', 'lg', 'xl']}>
+           <FormControl>
+  <FormLabel>Caratula Expediente</FormLabel>
+  <Input
+    type="text"
+    value={caratulaExpediente}
+    onChange={(e) => setCaratulaExpediente(e.target.value)}
+  />
+</FormControl>
             <FormControl>
               <FormLabel>Valor Jus(modificar de ser necesario)</FormLabel>
               <Input
@@ -343,21 +392,35 @@ function Calculator() {
             <FormControl>
               <FormLabel>MONTO SENTENCIA</FormLabel>
               <Input
-                type="number"
-                value={B5}
-                onChange={(e) => setB5(e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Otro porcentaje</FormLabel>
-              {/* <Input
-    type="number"
-    value={puntoMedio*100}
-    onChange={(e) => setPuntoMedio(e.target.value/100)}   
-  
-  /> */}
-            </FormControl>
-
+        type="text"
+        value={formattedB5}
+        onChange={(e) => {
+          // Remove non-digit characters and convert to a number
+          const rawValue = Number(e.target.value.replace(/,/g, ''));
+          setB5(rawValue);
+        }}
+      />
+    </FormControl>
+   
+    <FormControl>
+      <FormLabel>Otro porcentaje</FormLabel>
+      <InputGroup>
+        <Input
+          type="number"
+          placeholder="Si está vacío, se usará el valor de Punto Medio"
+          value={customPercentage !== '' ? parseFloat((customPercentage * 100).toFixed(2)) : ''}
+          onChange={(e) => {
+            if (e.target.value === '') {
+              setCustomPercentage('');
+            } else {
+              setCustomPercentage(Number(e.target.value) / 100);
+            }
+          }}
+        />
+        <InputRightAddon children="%" />
+      </InputGroup>
+      <FormHelperText>Si no se especifica un porcentaje, se usará el valor de Punto Medio por defecto.</FormHelperText>
+    </FormControl>
             <ButtonGroup>
               <Button type="submit" colorScheme="blue">
                 Calcular
@@ -373,15 +436,15 @@ function Calculator() {
 
           <VStack spacing={4} alignItems="center" width="100%">
             <Box
-              bg="blue.100"
-              borderRadius="md"
-              p={4}
-              boxShadow="md"
-              width={[ '60%', '60%', '60%']} // set a fixed width for larger screens and 80% for small screens
-              height="auto" // set a fixed height
-              minWidth="400px" // set a minimum width
-              minHeight="350px" // set a minimum height
-              textAlign="left"
+               bg="blue.100"
+               borderRadius="md"
+               p={4}
+               boxShadow="md"
+               width={['90%', '80%', '70%', '60%']}
+               height="auto"
+               minWidth={['90%', '80%', '60%', '400px']}
+               minHeight="350px"
+               textAlign="left"
             >
               <Text fontWeight="bold" fontSize="2xl" mb={2}>
                 Resultados
@@ -396,7 +459,7 @@ function Calculator() {
                 <Text as="span" fontWeight="bold" fontSize="xl">
                   Unidades económicas:
                 </Text>{" "}
-                {(unidadesEconomicas * 100).toFixed(2)}
+                {unidadesEconomicas.toFixed(2)}
               </Text>
               <Text>
                 <Text as="span" fontWeight="bold" fontSize="xl">
@@ -434,20 +497,31 @@ function Calculator() {
                 </Text>{" "}
                 {formatCurrency(honorariosMinimos)}
               </Text>
+              
+
               <Text fontWeight="bold" fontSize="2xl" align="center">
                 <Text as="span" fontWeight="bold" fontSize="2xl">
                   Honorarios Tramitación Total :
                 </Text>{" "}
                 {formatCurrency(honorariosTramitacionTotal)}
               </Text>
+
+              <Text color="green.500">
+                <Text as="span" fontWeight="bold" fontSize="xl">
+                  Porcentaje aplicado:
+                </Text>{" "}
+                <Text as="span" fontWeight="bold" fontSize="2xl">
+                  {(customPercentage !== '' ? customPercentage : puntoMedio) * 100} %
+                </Text>
+              </Text>
             </Box>
           </VStack>
-          <VStack>
+          <VStack width="100%" minWidth={['100%', '80%', '60%', '400px']} alignItems="justify">
             <Text align='center' width="100%" minWidth='300px'as="span" fontWeight="bold" fontSize="xl">
               Honorarios por etapas
             </Text>
 
-            <VStack width="100%" align="justify">
+            <VStack width="100%" minWidth={['100%', '80%', '60%', '400px']} alignItems="justify">
               <Checkbox
                 isChecked={stages.DemandaYContestacion}
                 onChange={() => handleStageChange("DemandaYContestacion")}
