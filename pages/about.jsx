@@ -3,7 +3,7 @@ import { Box, Text, Image, Flex, Heading } from "@chakra-ui/react";
 import { useSpring, animated, config } from 'react-spring';
 import NavBar from '../components/NavBar';
 
-const foto = './juarezlafranconi.jpg'
+const foto = './JuarezLafranconiSandoval.jpeg'
 const About = () => {
   const textFade = useSpring({
     from: { opacity: 0, marginTop: -500 },

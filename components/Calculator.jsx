@@ -25,11 +25,15 @@ import {
 import { jsPDF } from "jspdf";
 import axios from 'axios';
 import parse from 'html-react-parser'
+import { useJus } from '../components/useJus';
+import { useUnidadEconomica } from "./useUnidadEconomica";
 
 
 const optionsB2 = ["ORDINARIO", "ABREVIADO", "EJECUTIVO"];
 const optionsB3 = ["ACTOR", "DEMANDADO"];
 const optionsB4 = ["ADMISIÓN TOTAL", "ADMISIÓN PARCIAL", "RECHAZO TOTAL"];
+
+
 
 
 function baseRegulatoria(B2, B3, B4, B5) {
@@ -48,13 +52,13 @@ function baseRegulatoria(B2, B3, B4, B5) {
     B3 === "DEMANDADO" &&
     B4 === "ADMISIÓN TOTAL"
   ) {
-    return B5 * 1;
+    return B5 * 0.2;
   } else if (
     B2 === "ORDINARIO" &&
     B3 === "DEMANDADO" &&
     B4 === "ADMISIÓN PARCIAL"
   ) {
-    return B5 * 1;
+    return B5 * 0.3;
   } else if (
     B2 === "ORDINARIO" &&
     B3 === "DEMANDADO" &&
@@ -88,15 +92,15 @@ function baseRegulatoria(B2, B3, B4, B5) {
     B3 === "DEMANDADO" &&
     B4 === "RECHAZO TOTAL"
   ) {
-    return B5 * 0.1;
+    return B5 * 1;
   } else if (B2 === "EJECUTIVO" && B3 === "ACTOR" && B4 === "ADMISIÓN TOTAL") {
-    return B5 * 0.1;
+    return B5 * 1;
   } else if (
     B2 === "EJECUTIVO" &&
     B3 === "ACTOR" &&
     B4 === "ADMISIÓN PARCIAL"
   ) {
-    return B5 * 0.1;
+    return B5 * 1;
   } else if (B2 === "EJECUTIVO" && B3 === "ACTOR" && B4 === "RECHAZO TOTAL") {
     return B5 * 0.2;
   } else if (
@@ -116,7 +120,7 @@ function baseRegulatoria(B2, B3, B4, B5) {
     B3 === "DEMANDADO" &&
     B4 === "RECHAZO TOTAL"
   ) {
-    return B5 * 0.1;
+    return B5 * 1;
   }
   return 0;
 }
@@ -125,6 +129,11 @@ function honorariosMini(B2, jus) {
   const ORDINARIO = jus * 20;
   const ABREVIADO = jus * 15;
   const EJECUTIVO = jus * 10;
+  console.log(ORDINARIO)
+  console.log(ABREVIADO)
+  console.log(EJECUTIVO)
+  console.log(B2)
+  console.log(jus)
 
   return B2 === "ORDINARIO"
     ? ORDINARIO
@@ -152,6 +161,10 @@ const formatCurrency = (value) => {
 };
 
 function Calculator() {
+  const jus = useJus();
+console.log(jus)
+const valorUnidadEconomica = useUnidadEconomica();
+console.log(valorUnidadEconomica)
   const [stages, setStages] = useState({
     DemandaYContestacion: false,
     OfrecimientoDePrueba: false,
@@ -193,48 +206,55 @@ function Calculator() {
   const [honorariosMinimos, setHonorariosMinimos] = useState(0);
   const [honorariosTramitacionTotal, setHonorariosTramitacionTotal] =
     useState(0);
-  const [jus, setJus] = useState(null);
+  // const [jus, setJus] = useState(null);
   const [customPercentage, setCustomPercentage] = useState(0);
   const [caratulaExpediente, setCaratulaExpediente] = useState('');
   const [jusDisplay, setJusDisplay] = useState('');
+  const aperturaDeCarpeta = jus * 3;
 
-  const valorUnidadEconomica = 1573000;
+  
 
-  const aperturaDeCarpeta = (jus / 100) * 3;
-  const formattedAperturaDeCarpeta = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(aperturaDeCarpeta);
+  // const aperturaDeCarpeta = jus * 3;
+  // const formattedAperturaDeCarpeta = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(aperturaDeCarpeta);
 
 
   // setUnidadesEconomicas(unidadesEconomicas);
 
-  useEffect(() => {
-    fetch('/api/jus')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.jus) {
-          const jusNumber = Number(data.jus.replace(/\$|,|\./g, '').replace(',', '.'));
-          if (isNaN(jusNumber)) {
-            console.log('Jus value is not a valid number:', data.jus);
-          } else {
-            setJus(jusNumber);  // Convert to cents
-            setJusDisplay(data.jus.replace('$', ''));  // Remove dollar sign
-          }
-        } else {
-          console.log('Jus value is null or undefined:', data.jus);
-        }
-      })
-      .catch(error => console.error('Error fetching jus value:', error));
-  }, []);
+  // useEffect(() => {
+  //   fetch('/api/jus')
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       if (data.jus) {
+  //       const jusNumber = Number(data.jus.replace(/\$|\./g, '').replace(',', '.'));
+  //         if (isNaN(jusNumber)) {
+  //           console.log('Jus value is not a valid number:', data.jus);
+  //         } else {
+  //           setJus(jusNumber);  // Convert to cents
+  //           setJusDisplay(data.jus.replace('$', ''));  // Remove dollar sign
+  //           const aperturaDeCarpeta = jusNumber * 3;
+  //           setAperturaDeCarpeta(aperturaDeCarpeta);
+  //           const formattedAperturaDeCarpeta = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(aperturaDeCarpeta)
+  //         }
+  //       } else {
+  //         console.log('Jus value is null or undefined:', data.jus);
+  //       }
+  //     })
+  //     .catch(error => console.error('Error fetching jus value:', error));
+  // }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const honorariosMin = honorariosMini(B2, jus);
     setHonorariosMinimos(honorariosMin);
+    console.log(honorariosMin)
+    console.log(jus)
+    console.log(B2)
 
     const newBase = baseRegulatoria(B2, B3, B4, B5);
     setBase(newBase);
@@ -295,7 +315,7 @@ function Calculator() {
     setUnidadesEconomicas(0);
     setTramitacionTotal(0);
     setHonorariosTramitacionTotal(0);
-    setJus(5968);
+    // setJus(jus);
     setCustomPercentage(''); // reset customPercentage
     setCaratulaExpediente('');
 
@@ -320,10 +340,19 @@ function Calculator() {
     let y = 30;
     const lineBreak = 10;
 
+   
+
+  doc.text(`Jus: $${new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(jus)}`, 10, y);
+  y += lineBreak;
+
+  doc.text(`Valor Unidad Económica: $${new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorUnidadEconomica)}`, 10, y);
+  y += lineBreak;
+
+
     doc.text(`Base: ${formatCurrency(base)}`, 10, y);
     y += lineBreak;
 
-    doc.text(`Unidades económicas: ${unidadesEconomicas}`, 10, y);
+    doc.text(`Unidades económicas: ${unidadesEconomicas.toFixed(2)}`, 10, y);
     y += lineBreak;
 
     doc.text(`Minimo Escala: ${minimoEscala}`, 10, y);
@@ -387,7 +416,7 @@ function Calculator() {
                 <InputLeftAddon children="$" />
                 <Input
                   type="text"
-                  value={jusDisplay}
+                  value={jus}
                   onChange={(e) => {
                     const jusNumber = Number(e.target.value.replace(/\$|,|\./g, '').replace(',', '.'));
                     if (!isNaN(jusNumber)) {
@@ -525,7 +554,7 @@ function Calculator() {
                 <Text as="span" fontWeight="bold" fontSize="xl">
                   Apertura de carpeta:
                 </Text>{" "}
-                {formatCurrency(aperturaDeCarpeta)}
+                {aperturaDeCarpeta !== null ? formatCurrency(aperturaDeCarpeta) : 'Loading...'}
               </Text>
               <Text>
                 <Text as="span" fontWeight="bold" fontSize="xl">
@@ -547,14 +576,17 @@ function Calculator() {
                 </Text>{" "}
                 {formatCurrency(honorariosTramitacionTotal)}
               </Text>
+    
 
               <Text color="green.500">
                 <Text as="span" fontWeight="bold" fontSize="xl">
                   Porcentaje aplicado:
                 </Text>{" "}
                 <Text as="span" fontWeight="bold" fontSize="2xl">
-                  {(customPercentage !== '' ? customPercentage : puntoMedio) * 100} %
+                  {(customPercentage !== undefined && customPercentage !== '' && customPercentage !== 0 ? customPercentage : puntoMedio) * 100} %
                 </Text>
+             
+             
               </Text>
             </Box>
           </VStack>

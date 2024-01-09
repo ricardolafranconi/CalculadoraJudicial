@@ -1,49 +1,23 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
   FormControl,
   FormLabel,
   Input,
-  Select,
   Text,
   VStack,
   Stack,
-  HStack,
   ButtonGroup,
   Checkbox,
 } from "@chakra-ui/react";
 
-import {
-  CalculatorResultsContext,
-  useCalculatorResults,
-} from "../contextApi/CalculatorResultsContext";
+import { useCalculatorResults } from "../contextApi/CalculatorResultsContext";
 import { jsPDF } from "jspdf";
 
-
-// const optionsB2 = ["ORDINARIO", "ABREVIADO", "EJECUTIVO"];
-// const optionsB3 = ["ACTOR", "DEMANDADO"];
-// const optionsB4 = ["ADMISIÓN TOTAL", "ADMISIÓN PARCIAL", "RECHAZO TOTAL"];
-
-
- function baseRegulatoria(B5){
-    return B5
+function baseRegulatoria(B5) {
+  return B5;
 }
-//   
-
-// function honorariosMini(B2, jus) {
-//   const ORDINARIO = jus * 20;
-//   const ABREVIADO = jus * 15;
-//   const EJECUTIVO = jus * 10;
-
-//   return B2 === "ORDINARIO"
-//     ? ORDINARIO
-//     : B2 === "ABREVIADO"
-//     ? ABREVIADO
-//     : B2 === "EJECUTIVO"
-//     ? EJECUTIVO
-//     : 0;
-// }
 
 function calculateMinimoEscala(unidadesEconomicas) {
   if (unidadesEconomicas < 5) return 0.2;
