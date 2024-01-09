@@ -15,6 +15,7 @@ import {
   InputGroup, 
   InputRightAddon,
   FormHelperText,
+  InputLeftAddon,
 } from "@chakra-ui/react";
 
 import {
@@ -22,6 +23,8 @@ import {
   useCalculatorResults,
 } from "../contextApi/CalculatorResultsContext";
 import { jsPDF } from "jspdf";
+import axios from 'axios';
+import parse from 'html-react-parser'
 
 
 const optionsB2 = ["ORDINARIO", "ABREVIADO", "EJECUTIVO"];
@@ -190,15 +193,42 @@ function Calculator() {
   const [honorariosMinimos, setHonorariosMinimos] = useState(0);
   const [honorariosTramitacionTotal, setHonorariosTramitacionTotal] =
     useState(0);
-  const [jus, setJus] = useState(5968);
+  const [jus, setJus] = useState(null);
   const [customPercentage, setCustomPercentage] = useState(0);
   const [caratulaExpediente, setCaratulaExpediente] = useState('');
+  const [jusDisplay, setJusDisplay] = useState('');
 
   const valorUnidadEconomica = 1573000;
 
-  const aperturaDeCarpeta = jus * 3;
+  const aperturaDeCarpeta = (jus / 100) * 3;
+  const formattedAperturaDeCarpeta = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(aperturaDeCarpeta);
+
 
   // setUnidadesEconomicas(unidadesEconomicas);
+
+  useEffect(() => {
+    fetch('/api/jus')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.jus) {
+          const jusNumber = Number(data.jus.replace(/\$|,|\./g, '').replace(',', '.'));
+          if (isNaN(jusNumber)) {
+            console.log('Jus value is not a valid number:', data.jus);
+          } else {
+            setJus(jusNumber);  // Convert to cents
+            setJusDisplay(data.jus.replace('$', ''));  // Remove dollar sign
+          }
+        } else {
+          console.log('Jus value is null or undefined:', data.jus);
+        }
+      })
+      .catch(error => console.error('Error fetching jus value:', error));
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -353,11 +383,20 @@ function Calculator() {
 </FormControl>
             <FormControl>
               <FormLabel>Valor Jus(modificar de ser necesario)</FormLabel>
-              <Input
-                type="number"
-                value={jus}
-                onChange={(e) => setJus(e.target.value)}
-              />
+              <InputGroup>
+                <InputLeftAddon children="$" />
+                <Input
+                  type="text"
+                  value={jusDisplay}
+                  onChange={(e) => {
+                    const jusNumber = Number(e.target.value.replace(/\$|,|\./g, '').replace(',', '.'));
+                    if (!isNaN(jusNumber)) {
+                      setJus(jusNumber * 100);  // Convert to cents
+                      setJusDisplay(e.target.value);
+                    }
+                  }}
+                />
+              </InputGroup>
             </FormControl>
             <FormControl>
               <FormLabel>TIPO DE JUICIO</FormLabel>
@@ -391,16 +430,19 @@ function Calculator() {
             </FormControl>
             <FormControl>
               <FormLabel>MONTO SENTENCIA</FormLabel>
-              <Input
-        type="text"
-        value={formattedB5}
-        onChange={(e) => {
-          // Remove non-digit characters and convert to a number
-          const rawValue = Number(e.target.value.replace(/,/g, ''));
-          setB5(rawValue);
-        }}
-      />
-    </FormControl>
+              <InputGroup>
+                <InputLeftAddon children="$" />
+                <Input
+                  type="text"
+                  value={formattedB5}
+                  onChange={(e) => {
+                    // Remove non-digit characters and convert to a number
+                    const rawValue = Number(e.target.value.replace(/,/g, ''));
+                    setB5(rawValue);
+                  }}
+                />
+              </InputGroup>
+            </FormControl>
    
     <FormControl>
       <FormLabel>Otro porcentaje</FormLabel>
