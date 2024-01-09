@@ -1,10 +1,15 @@
 // File: pages/api/unidadesEconomicas.js
-
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chrome from 'chrome-aws-lambda';
 
 export default async function handler(req, res) {
     try {
-        const browser = await puppeteer.launch({ headless: 'new' });
+        const browser = await puppeteer.launch({
+            args: chrome.args,
+            executablePath: process.env.AWS_LAMBDA_FUNCTION_NAME ? await chrome.executablePath : 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+            headless: chrome.headless,
+        });
+
         const page = await browser.newPage();
         await page.goto('http://carc.com.ar/valores/');
 
@@ -19,6 +24,7 @@ export default async function handler(req, res) {
 
         await browser.close();
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Server error' });
     }
 }
