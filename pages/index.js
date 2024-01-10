@@ -91,7 +91,7 @@ function Home() {
           <Image
               src={backgroundImage}
               alt="background"
-              height={["none", "none", "none", "650px", '800px']}
+              height={["none", "none", "400px", "400px", '600px']}
   width="400px"
               objectFit="cover"
               objectPosition="center"

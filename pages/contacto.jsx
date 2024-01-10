@@ -23,8 +23,8 @@ export default function Contact() {
         >
             <Navbar />
             <Box 
-                p={8}
-                w={{base: "90%", md: "60%", lg: "40%"}}
+                p={20}
+                w={{base: "90%", md: "60%", lg: "60%"}}
                 bg={formBackground}
                 borderRadius="lg"
                 boxShadow="lg"

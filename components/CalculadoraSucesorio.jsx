@@ -252,9 +252,9 @@ const newFinalResult = newTramitacionTotal;
   <Stack
     alignItems='center'
     direction={['column', 'column', 'row', 'row']}
-    spacing={['5%', '10%', '15%', '20%']} // Increase spacing
+    spacing={['5%', '10%', '15%', '10%']} // Increase spacing
     justifyContent='space-around'
-    width={['100%', '100%', '100%', '100%']} // Set width to 100% for all screen sizes
+    width={['100%', '100%', '60%', '60%']} // Set width to 100% for all screen sizes
   >
     <VStack> // Increase spacing
     <FormControl>

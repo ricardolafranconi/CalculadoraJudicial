@@ -398,12 +398,14 @@ const valorUnidadEconomica = useUnidadEconomica();
   return (
     <form onSubmit={handleSubmit}>
       <VStack  paddingTop={['15%', '10%', '5%', '2%']} paddingBottom="2%">
-      <Stack alignItems='center'
-        direction={['column', 'column', 'row', 'row']}
-        width='100%'
-        spacing={['5%', '10%', '15%', '20%']}
-        justifyContent='space-around'>
-           <VStack fontSize={['sm', 'md', 'lg', 'xl']}>
+      <Stack 
+  alignItems='center'
+  direction={['column', 'column', 'row', 'row']}
+  width={{ base: '100%', md: '80%', lg: '60%' }}
+  spacing={{ base: '3%', md: '5%', lg: '10%' }}
+  justifyContent='space-around'
+>
+           <VStack fontSize={['sm', 'md', 'lg', 'lg']}>
            <FormControl>
   <FormLabel>Caratula Expediente</FormLabel>
   <Input
