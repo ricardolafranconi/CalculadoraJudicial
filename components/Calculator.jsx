@@ -405,7 +405,8 @@ const valorUnidadEconomica = useUnidadEconomica();
   spacing={{ base: '3%', md: '5%', lg: '10%' }}
   justifyContent='space-around'
 >
-           <VStack fontSize={['sm', 'md', 'lg', 'lg']}>
+           <VStack fontSize={['sm', 'md', 'lg', 'lg']}
+           width={{ base: '80%', md: '80%', lg: '60%' }}>
            <FormControl>
   <FormLabel>Caratula Expediente</FormLabel>
   <Input
@@ -594,7 +595,7 @@ const valorUnidadEconomica = useUnidadEconomica();
               </Text>
             </Box>
           </VStack>
-          <VStack width="100%" minWidth={['100%', '80%', '60%', '400px']} alignItems="justify">
+          <VStack width="80%" minWidth={['80%', '80%', '60%', '400px']} alignItems="justify">
             <Text align='center' width="100%" minWidth='300px'as="span" fontWeight="bold" fontSize="xl">
               Honorarios por etapas
             </Text>
