@@ -164,7 +164,9 @@ function Calculator() {
   const jus = useJus();
 console.log(jus)
 const valorUnidadEconomica = useUnidadEconomica();
-console.log(valorUnidadEconomica)
+  console.log('valorUnidadEconomica:', valorUnidadEconomica);
+  console.log('Type of jus:', typeof jus);
+  console.log('Type of valorUnidadEconomica:', typeof valorUnidadEconomica);
   const [stages, setStages] = useState({
     DemandaYContestacion: false,
     OfrecimientoDePrueba: false,
