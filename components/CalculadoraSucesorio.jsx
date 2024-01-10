@@ -10,12 +10,17 @@ import {
   Stack,
   ButtonGroup,
   Checkbox,
+  InputRightAddon,
+  InputGroup,
+  InputLeftAddon,
+
 } from "@chakra-ui/react";
 
 import { useCalculatorResults } from "../contextApi/CalculatorResultsContext";
 import { jsPDF } from "jspdf";
 import { useJus } from "./useJus";
 import { useUnidadEconomica } from "./useUnidadEconomica";
+
 
 function baseRegulatoria(B5) {
   return B5;
@@ -76,17 +81,21 @@ function CalculadoraSucesorio() {
   // const [B4, setB4] = useState("ADMISIÓN TOTAL");
   const [B5, setB5] = useState(0);
   const [base, setBase] = useState(0);
-  const [puntoMedio, setPuntoMedio] = useState();
+  const [puntoMedio, setPuntoMedio] = useState(0);
   const[escalaSinIncidente, setEscalaSinIncidente] = useState()
   const [maximoEscala, setMaximoEscala] = useState(0.25);
   const [minimoEscala, setMinimoEscala] = useState(0.2);
+  const [isAperturaChecked, setIsAperturaChecked] = useState(false);
+  const [customPercentage, setCustomPercentage] = useState(null);
+  const [formattedB5, setFormattedB5] = useState(0);
+  const [caratulaExpediente, setCaratulaExpediente] = useState('');
 
   const [unidadesEconomicas, setUnidadesEconomicas] = useState(0);
-  const [tramitacionTotal, setTramitacionTotal] = useState();
-  const [tramitacionSinIncidentes, setTramitacionSinIncidentes] = useState()
+  const [tramitacionTotal, setTramitacionTotal] = useState(0);
+  const [tramitacionSinIncidentes, setTramitacionSinIncidentes] = useState(0)
   const [honorariosMinimos, setHonorariosMinimos] = useState();
   const [honorariosTramitacionTotal, setHonorariosTramitacionTotal] =
-    useState();
+    useState(0);
   // const [jus, setJus] = useState(5968);
 
   // const valorUnidadEconomica = 1573000;
@@ -111,17 +120,30 @@ function CalculadoraSucesorio() {
 
     const newPuntoMedio = (newMinimoEscala + maximoEscala) / 2;
     setPuntoMedio(newPuntoMedio);
+    console.log(newPuntoMedio);
 
     const newEscalaSinIncidente = (newPuntoMedio * 0.6);
     setEscalaSinIncidente(newEscalaSinIncidente)
+    console.log(newEscalaSinIncidente)
 
-    const newTramitacionTotal = newPuntoMedio * newBase + aperturaDeCarpeta;
-    setTramitacionTotal(newTramitacionTotal);
+    console.log('customPercentage', customPercentage);
+console.log('puntoMedio', puntoMedio);
+console.log('customPercentage', customPercentage);
+console.log('puntoMedio', puntoMedio);
 
-    const newTramitacionSinIncidentes = newEscalaSinIncidente * newBase + aperturaDeCarpeta;
-    setTramitacionSinIncidentes(newTramitacionSinIncidentes)
+    const percentageToUse = customPercentage !== null ? customPercentage : newPuntoMedio;
+    const percentageForSinIncidentes = customPercentage !== null ? customPercentage : newEscalaSinIncidente;
+    console.log('percentageToUse', percentageToUse);
+    console.log('newBase', newBase);
+    const newTramitacionTotal = percentageToUse * newBase + (isAperturaChecked ? aperturaDeCarpeta : 0);
+setTramitacionTotal(newTramitacionTotal);
+console.log(newTramitacionTotal);
 
-    const newFinalResult = newTramitacionTotal
+const newTramitacionSinIncidentes = percentageForSinIncidentes * newBase + (isAperturaChecked ? aperturaDeCarpeta : 0);
+setTramitacionSinIncidentes(newTramitacionSinIncidentes)
+console.log(newTramitacionSinIncidentes)
+
+const newFinalResult = newTramitacionTotal;
     
     setHonorariosTramitacionTotal(newFinalResult);
     console.log(newFinalResult);
@@ -166,7 +188,7 @@ function CalculadoraSucesorio() {
     setUnidadesEconomicas(0);
     setTramitacionTotal(0);
     setHonorariosTramitacionTotal(0);
-    setJus(5968);
+  
     setEscalaSinIncidente(0);
     setTramitacionSinIncidentes(0)
     setStages({
@@ -180,25 +202,28 @@ function CalculadoraSucesorio() {
   const downloadPdf = () => {
     const doc = new jsPDF();
     doc.setFontSize(22);
-    doc.text("Resultados", 10, 10);
+    doc.text("Caratula Expediente: " + caratulaExpediente, 10, 10); // Add this line
+    doc.text("Resultados", 10, 20); // Change the y-coordinate to 20
     doc.setFontSize(16);
 
-    doc.text(`Base: ${formatCurrency(base)}`, 10, 20);
-    doc.text(`Unidades económicas: ${unidadesEconomicas}`, 10, 30);
-    doc.text(`Minimo Escala: ${minimoEscala}`, 10, 40);
-    doc.text(`Máximo Escala: ${maximoEscala}`, 10, 50);
+    doc.text(`Base: ${formatCurrency(base)}`, 10, 30); // Change the y-coordinate to 30
+    doc.text(`Unidades económicas: ${unidadesEconomicas}`, 10, 40); // Change the y-coordinate to 40
+    doc.text(`Jus value: ${jusValue}`, 10, 50); // Add this line
+    doc.text(`Unidad Economica: ${unidadEconomica}`, 10, 60); // Add this line
+    doc.text(`Minimo Escala: ${minimoEscala}`, 10, 70); // Change the y-coordinate to 70
+    doc.text(`Máximo Escala: ${maximoEscala}`, 10, 80); // Change the y-coordinate to 80
     doc.text(
       `Apertura de Carpeta: ${formatCurrency(aperturaDeCarpeta)}`,
       10,
-      60
+      90 // Change the y-coordinate to 90
     );
-    doc.text(`Punto Medio: ${puntoMedio}`, 10, 70);
+    doc.text(`Punto Medio: ${puntoMedio}`, 10, 100); // Change the y-coordinate to 100
     doc.text(
       `Honorarios Tramitación Total: ${formatCurrency(
         honorariosTramitacionTotal
       )}`,
       10,
-      80
+      110 // Change the y-coordinate to 110
     );
 
     // Add other results here
@@ -211,9 +236,19 @@ function CalculadoraSucesorio() {
   // const puntoMedio = (minimoEscala + maximoEscala) / 2;
   // setPuntoMedio(puntoMedio);
 
+  const formatInput = (input) => {
+    // Remove non-digit characters and convert to a number
+    const rawValue = parseInt(input.replace(/\D/g, ''), 10);
+    
+    // Format the number with thousands separators
+    const formattedValue = new Intl.NumberFormat().format(rawValue);
+    
+    return formattedValue;
+  };
+
   return (
     <form onSubmit={handleSubmit}>
-     <VStack paddingTop={['15%', '10%', '8%', '5%']} paddingBottom="5%" alignItems = "center">
+     <VStack paddingTop={['15%', '10%', '8%', '5%']} paddingBottom="10%" alignItems = "center">
   <Stack
     alignItems='center'
     direction={['column', 'column', 'row', 'row']}
@@ -222,6 +257,14 @@ function CalculadoraSucesorio() {
     width={['100%', '100%', '100%', '100%']} // Set width to 100% for all screen sizes
   >
     <VStack> // Increase spacing
+    <FormControl>
+  <FormLabel>Caratula Expediente</FormLabel>
+  <Input
+    type="text"
+    value={caratulaExpediente}
+    onChange={(e) => setCaratulaExpediente(e.target.value)}
+  />
+</FormControl>
       <FormControl>
         <FormLabel>Valor Jus</FormLabel>
         <Input
@@ -230,23 +273,49 @@ function CalculadoraSucesorio() {
           onChange={(e) => setJus(e.target.value)}
         />
       </FormControl>
+      <FormControl>
+        <FormLabel>BASE IMPONIBLE</FormLabel>
+        <InputGroup>
+          <InputLeftAddon children="$" />
+          <Input
+            type="text"
+            value={formattedB5} // Use the formatted value for display
+            onChange={(e) => {
+              // Remove non-digit characters and convert to a number
+              const rawValue = parseInt(e.target.value.replace(/\D/g, ''), 10);
+              
+              // Set the raw value for calculations
+              setB5(rawValue);
+              console.log(rawValue);
+              
+              // Format the input and set the formatted value
+              const formattedValue = isNaN(rawValue) ? '' : formatInput(String(rawValue));
+              setFormattedB5(formattedValue);
+            }}
+          />
+        </InputGroup>
+      </FormControl>
             <FormControl>
-              <FormLabel>BASE IMPONIBLE </FormLabel>
-              <Input
-                type="number"
-                value={B5}
-                onChange={(e) => setB5(e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Otro porcentaje</FormLabel>
-              {/* <Input
-    type="number"
-    value={puntoMedio*100}
-    onChange={(e) => setPuntoMedio(e.target.value/100)}   
-  
-  /> */}
-            </FormControl>
+  <FormLabel>Apertura de Carpeta?</FormLabel>
+  <Checkbox
+    isChecked={isAperturaChecked}
+    onChange={(e) => setIsAperturaChecked(e.target.checked)}
+  >
+    Incluir Apertura de Carpeta en el resultado final
+  </Checkbox>
+  <FormControl>
+    <FormLabel>Otro porcentaje</FormLabel>
+    <InputGroup>
+      <Input
+        type="number"
+        placeholder="0" // Add placeholder
+        value={customPercentage !== null ? customPercentage * 100 : ''} // Convert to percentage
+        onChange={(e) => setCustomPercentage(e.target.value / 100)} // Convert from percentage
+      />
+      <InputRightAddon children="%" /> // Add percentage sign
+    </InputGroup>
+  </FormControl>
+</FormControl>
 
             <ButtonGroup spacing="4">
             <Button type="submit" colorScheme="blue">
@@ -336,6 +405,14 @@ function CalculadoraSucesorio() {
                   Honorarios Tramitación Total :
                 </Text>{" "}
                 {formatCurrency(honorariosTramitacionTotal)}
+              </Text>
+              <Text color="green.500">
+                <Text as="span" fontWeight="bold" fontSize="xl">
+                  Porcentaje aplicado:
+                </Text>{" "}
+                <Text as="span" fontWeight="bold" fontSize="2xl">
+                  {(customPercentage !== undefined && customPercentage !== '' && customPercentage !== 0 ? customPercentage : puntoMedio) * 100} %
+                </Text>
               </Text>
             </Box>
           </VStack>

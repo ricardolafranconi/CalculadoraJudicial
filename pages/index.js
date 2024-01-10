@@ -27,6 +27,7 @@ import {
   Select,
   VStack,
   HStack,
+  Spacer,
 } from "@chakra-ui/react";
 import useTypewriter from "react-typewriter-hook";
 import Navbar from "../components/NavBar";
@@ -109,25 +110,44 @@ function Home() {
         </Box>
       </Element>
 
- 
-<Flex
-alignItems="center"
-justifyContent="center"
+      <Flex
+  alignItems="center"
+  justifyContent="center"
+  direction="column" // Add this line
+  minHeight="100vh" // Add this line
 >
-  <VStack>
+  <VStack spacing={4} width="100%"> // Add spacing and width
 
-<FormControl width={{ base: "50%", sm: "200px" }} mt={8}  justifyContent='center'>
-  <FormLabel justifyContent='center'>Tipo de Juicio</FormLabel>
-  <Select
-    value={selectedCalculator}
-    onChange={(e) => setSelectedCalculator(e.target.value)}
-  >
-    
-    <option value="calculator1">Cobro de Pesos</option>
-    <option value="calculator2">Sucesorio</option>
-  </Select>
+    <Spacer /> // Add this line
+
+<FormControl 
+  width={{ base: "90%", sm: "60%", md: "40%", lg: "30%" }} 
+  mt={4} 
+  mb={2} 
+  justifyContent='center'
+  boxShadow="lg"
+  borderRadius="md"
+  p={4}
+  backgroundColor="white"
+  zIndex={1}
+>
+  <Flex alignItems="center" justifyContent="space-between">
+    <Box p={2}>
+      <FormLabel mb={0}>Tipo de Juicio</FormLabel>
+    </Box>
+    <Box p={2}>
+      <Select
+        value={selectedCalculator}
+        onChange={(e) => setSelectedCalculator(e.target.value)}
+      >
+        <option value="calculator1">Cobro de Pesos</option>
+        <option value="calculator2">Sucesorio</option>
+      </Select>
+    </Box>
+  </Flex>
 </FormControl>
 
+<Spacer />
 
 <HStack>
 

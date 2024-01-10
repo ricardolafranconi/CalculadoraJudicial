@@ -397,7 +397,7 @@ const valorUnidadEconomica = useUnidadEconomica();
 
   return (
     <form onSubmit={handleSubmit}>
-      <VStack  paddingTop={['15%', '10%', '5%', '2%']} paddingBottom="10%">
+      <VStack  paddingTop={['15%', '10%', '5%', '2%']} paddingBottom="2%">
       <Stack alignItems='center'
         direction={['column', 'column', 'row', 'row']}
         width='100%'
