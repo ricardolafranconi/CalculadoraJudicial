@@ -14,6 +14,8 @@ import {
 
 import { useCalculatorResults } from "../contextApi/CalculatorResultsContext";
 import { jsPDF } from "jspdf";
+import { useJus } from "./useJus";
+import { useUnidadEconomica } from "./useUnidadEconomica";
 
 function baseRegulatoria(B5) {
   return B5;
@@ -36,6 +38,8 @@ const formatCurrency = (value) => {
 };
 
 function CalculadoraSucesorio() {
+  const jus = useJus();
+  const valorUnidadEconomica = useUnidadEconomica();
   const [stages, setStages] = useState({
     EscritoDH: false,
     AutoDH: false,
@@ -83,9 +87,9 @@ function CalculadoraSucesorio() {
   const [honorariosMinimos, setHonorariosMinimos] = useState();
   const [honorariosTramitacionTotal, setHonorariosTramitacionTotal] =
     useState();
-  const [jus, setJus] = useState(5968);
+  // const [jus, setJus] = useState(5968);
 
-  const valorUnidadEconomica = 1573000;
+  // const valorUnidadEconomica = 1573000;
 
   const aperturaDeCarpeta = jus * 3;
 
@@ -209,47 +213,23 @@ function CalculadoraSucesorio() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <VStack  paddingTop={['15%', '15%', '15%', '8%']} paddingBottom="10%">
-      <Stack alignItems='center'direction={['column', 'column','column', 'row']} width='80%' spacing='10%' justifyContent='space-around'>
-          <VStack fontSize=''>
-            <FormControl>
-              <FormLabel>Valor Jus(modificar de ser necesario)</FormLabel>
-              <Input
-                type="number"
-                value={jus}
-                onChange={(e) => setJus(e.target.value)}
-              />
-            </FormControl>
-            {/* <FormControl>
-              <FormLabel>TIPO DE JUICIO</FormLabel>
-              <Select value={B2} onChange={(e) => setB2(e.target.value)}>
-                {optionsB2.map((option) => (
-                  <option value={option} key={option}>
-                    {option}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>VENCEDOR</FormLabel>
-              <Select value={B3} onChange={(e) => setB3(e.target.value)}>
-                {optionsB3.map((option) => (
-                  <option value={option} key={option}>
-                    {option}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>RESULTADO</FormLabel>
-              <Select value={B4} onChange={(e) => setB4(e.target.value)}>
-                {optionsB4.map((option) => (
-                  <option value={option} key={option}>
-                    {option}
-                  </option>
-                ))}
-              </Select>
-            </FormControl> */}
+     <VStack paddingTop={['15%', '10%', '8%', '5%']} paddingBottom="5%" alignItems = "center">
+  <Stack
+    alignItems='center'
+    direction={['column', 'column', 'row', 'row']}
+    spacing={['5%', '10%', '15%', '20%']} // Increase spacing
+    justifyContent='space-around'
+    width={['100%', '100%', '100%', '100%']} // Set width to 100% for all screen sizes
+  >
+    <VStack> // Increase spacing
+      <FormControl>
+        <FormLabel>Valor Jus</FormLabel>
+        <Input
+          type="number"
+          value={jus}
+          onChange={(e) => setJus(e.target.value)}
+        />
+      </FormControl>
             <FormControl>
               <FormLabel>BASE IMPONIBLE </FormLabel>
               <Input
@@ -268,18 +248,18 @@ function CalculadoraSucesorio() {
   /> */}
             </FormControl>
 
-            <ButtonGroup>
-              <Button type="submit" colorScheme="blue">
-                Calcular
-              </Button>
-              <Button colorScheme="red" onClick={handleReset}>
-                Resetear
-              </Button>
-              <Button colorScheme="green" onClick={downloadPdf}>
-                Descargar PDF
-              </Button>
-            </ButtonGroup>
-          </VStack>
+            <ButtonGroup spacing="4">
+            <Button type="submit" colorScheme="blue">
+              Calcular
+            </Button>
+            <Button colorScheme="red" onClick={handleReset}>
+              Resetear
+            </Button>
+            <Button colorScheme="green" onClick={downloadPdf}>
+              Descargar PDF
+            </Button>
+          </ButtonGroup>
+        </VStack>
 
           <VStack spacing={4} alignItems="center" width="100%">
             <Box
@@ -359,8 +339,8 @@ function CalculadoraSucesorio() {
               </Text>
             </Box>
           </VStack>
-          <VStack>
-            <Text width="100%" as="span" fontWeight="bold" fontSize="xl">
+          <VStack width="100%" minWidth={['100%', '80%', '60%', '400px']} alignItems="justify">
+            <Text align='center' width="100%" minWidth='300px'as="span" fontWeight="bold" fontSize="xl">
               Honorarios por etapas
             </Text>
 
